@@ -9,9 +9,27 @@ on:
     types: [opened, synchronize]
 
 env:
-  SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+  SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
 
 jobs:
+  test_job:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: echo "$COMMITS"
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
+      - name: env check
+        run: echo "$SKIP_DEPLOYMENT"
   simple_deployment_pipeline:
     timeout-minutes: 60
     runs-on: ubuntu-22.04
