@@ -52,8 +52,23 @@ jobs:
           path: playwright-report/
           retention-days: 30
       - name: Trigger deployment
+        id: deploy
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Successful deployment notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: steps.deploy.outcome == 'success'
+        with:
+          severity: info
+          details: New version deployed successfully.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Build failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: Build failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     if: ${{ !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     needs: [simple_deployment_pipeline]
