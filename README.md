@@ -2,6 +2,8 @@
 
 Helsinki University Full Stack Open course part 11.
 
+Exercises 11.20-11.21: https://github.com/Habugabu/FullStackOpenPart3
+
 Other parts: https://github.com/Habugabu/FullStackOpen
 
 ## Commands
